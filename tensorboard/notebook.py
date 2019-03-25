@@ -209,7 +209,7 @@ def _time_delta_from_info(info):
   return str(now.replace(microsecond=0) - then.replace(microsecond=0))
 
 
-def display(port=None, height=None):
+def display(port=None, height=None, hostname="localhost"):
   """Display a TensorBoard instance already running on this machine.
 
   Args:
@@ -220,10 +220,10 @@ def display(port=None, height=None):
       UI, as an `int` number of pixels, or `None` to use a default value
       (currently 800).
   """
-  _display(port=port, height=height, print_message=True, display_handle=None)
+  _display(port=port, height=height, print_message=True, display_handle=None, hostname=hostname)
 
 
-def _display(port=None, height=None, print_message=False, display_handle=None):
+def _display(port=None, height=None, print_message=False, display_handle=None, hostname="localhost"):
   """Internal version of `display`.
 
   Args:
@@ -269,12 +269,15 @@ def _display(port=None, height=None, print_message=False, display_handle=None):
       # additional information. There's nothing useful to say.
       pass
 
-  fn = {
-      _CONTEXT_COLAB: _display_colab,
-      _CONTEXT_IPYTHON: _display_ipython,
-      _CONTEXT_NONE: _display_cli,
-  }[_get_context()]
-  return fn(port=port, height=height, display_handle=display_handle)
+  if _get_context()==_CONTEXT_IPYTHON:
+    fn = _display_ipython
+    return fn(port=port, height=height, display_handle=display_handle, hostname=hostname)
+  else:
+    fn = {
+        _CONTEXT_COLAB: _display_colab,
+        _CONTEXT_NONE: _display_cli
+    }[_get_context()]
+    return fn(port=port, height=height, display_handle=display_handle)
 
 
 def _display_colab(port, height, display_handle):
@@ -357,10 +360,10 @@ def _display_colab(port, height, display_handle):
     IPython.display.display(html)
 
 
-def _display_ipython(port, height, display_handle):
+def _display_ipython(port, height, display_handle, hostname="localhost"):
   import IPython.display
   iframe = IPython.display.IFrame(
-      src="http://localhost:%d" % port,
+      src="http://%s:%d" % (hostname, port)
       height=height,
       width="100%",
   )

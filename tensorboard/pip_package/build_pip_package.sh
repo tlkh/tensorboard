@@ -60,7 +60,7 @@ command -v perl >/dev/null
 command -v virtualenv >/dev/null
 [ -d "${RUNFILES}" ]
 
-dest=/tmp/tensorboard
+dest=/tmp
 if [ ! -e $dest ]; then
   mkdir $dest
 else
@@ -73,11 +73,11 @@ fi
 cd "${dest}"
 
 cp -LR "${RUNFILES}/org_tensorflow_tensorboard/tensorboard" .
-mv -f "tensorboard/pip_package/LICENSE" .
-mv -f "tensorboard/pip_package/MANIFEST.in" .
-mv -f "tensorboard/pip_package/README.rst" .
-mv -f "tensorboard/pip_package/setup.cfg" .
-mv -f "tensorboard/pip_package/setup.py" .
+cp -f "tensorboard/pip_package/LICENSE" .
+cp -f "tensorboard/pip_package/MANIFEST.in" .
+cp -f "tensorboard/pip_package/README.rst" .
+cp -f "tensorboard/pip_package/setup.cfg" .
+cp -f "tensorboard/pip_package/setup.py" .
 rm -rf tensorboard/pip_package
 
 rm -f tensorboard/tensorboard              # bazel py_binary sh wrapper
